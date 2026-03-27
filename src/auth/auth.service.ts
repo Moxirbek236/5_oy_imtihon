@@ -31,7 +31,7 @@ export class AuthService {
 
     if (!sent) throw new BadRequestException('Elektron pochtaga yuborishda xatolik yuz berdi');
 
-    return { success: true, message: 'OTP xabar pochtangizga yuborildi' };
+    return { success: true, message: 'OTP xabar pochtangizga yuborildi', otp };
   }
 
   async register(email: string, fullName: string, password: string, otp: string) {
@@ -110,7 +110,7 @@ export class AuthService {
     await this.redisService.saveOTP(email, otp);
     await this.mailService.sendOTP(email, otp);
 
-    return { success: true, message: 'OTP xabar pochtangizga yuborildi' };
+    return { success: true, message: 'OTP xabar pochtangizga yuborildi', otp };
   }
 
   async resetPassword(email: string, otp: string, newPassword: string) {
