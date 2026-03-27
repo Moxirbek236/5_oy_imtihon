@@ -42,8 +42,8 @@ export class SectionLessonService {
       };
     }
 
-    if (query.name) {
-      where.name = { contains: query.name, mode: 'insensitive' };
+    if (query.search) {
+      where.name = { contains: query.search, mode: 'insensitive' };
     }
 
     if (user.role === UserRole.MENTOR && !query.courseId) {

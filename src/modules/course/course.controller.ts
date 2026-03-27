@@ -10,6 +10,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { UserRole, PaidVia } from '@prisma/client';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Courses')
 @Controller('courses')
@@ -75,7 +76,7 @@ export class CourseController {
   @ApiOperation({
     summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.STUDENT}`,
   })
-  findAll(@Query() query: any) {
+  findAll(@Query() query: PaginationDto) {
     return this.courseService.findAll(query);
   }
 
@@ -84,8 +85,17 @@ export class CourseController {
   @Roles(UserRole.MENTOR, UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Mentor ozining kurslarini korishi' })
-  findMe(@CurrentUser() user: any, @Query() query: any) {
+  findMe(@CurrentUser() user: any, @Query() query: PaginationDto) {
     return this.courseService.findMe(user, query);
+  }
+
+  @Get('my-courses')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.STUDENT, UserRole.ASSISTANT)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Student ozining sotib olgan kurslarini korishi' })
+  findMyPurchased(@CurrentUser() user: any, @Query() query: PaginationDto) {
+    return this.courseService.findMyPurchased(user, query);
   }
 
   @Get(':id')

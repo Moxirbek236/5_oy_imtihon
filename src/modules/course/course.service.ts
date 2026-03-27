@@ -35,12 +35,18 @@ export class CourseService {
     return { success: true, data: course };
   }
 
-  async findAll(query: any) {
-    const where: any = {};
-    if (query.published !== undefined) where.published = query.published === 'true';
+  async findAll(query: any = {}) {
+    const where: any = { published: true };
+
+    if (query.categoryId) where.categoryId = parseInt(query.categoryId);
     if (query.level) where.level = query.level;
-    if (query.categoryId) where.categoryId = Number(query.categoryId);
-    if (query.name) where.name = { contains: query.name, mode: 'insensitive' };
+
+    if (query.search) {
+      where.OR = [
+        { name: { contains: query.search, mode: 'insensitive' } },
+        { about: { contains: query.search, mode: 'insensitive' } },
+      ];
+    }
 
     const page = query.page ? parseInt(query.page) : 1;
     const limit = query.limit ? parseInt(query.limit) : 10;
@@ -67,8 +73,13 @@ export class CourseService {
 
   async findMe(user: any, query: any) {
     const where: any = { mentorId: user.id };
-    
-    if (query.name) where.name = { contains: query.name, mode: 'insensitive' };
+
+    if (query.search) {
+      where.OR = [
+        { name: { contains: query.search, mode: 'insensitive' } },
+        { about: { contains: query.search, mode: 'insensitive' } },
+      ];
+    }
     if (query.published !== undefined) where.published = query.published === 'true';
 
     const page = query.page ? parseInt(query.page) : 1;
@@ -90,6 +101,42 @@ export class CourseService {
       }),
       this.prisma.course.count({ where }),
     ]);
+    return { success: true, data: courses, total, page, limit };
+  }
+
+  async findMyPurchased(user: any, query: any) {
+    const where: any = {
+      OR: [
+        { purchasedCourses: { some: { userId: user.id } } },
+        { assignedCourses: { some: { userId: user.id } } },
+      ],
+    };
+
+    if (query.search) {
+      where.OR = [
+        { name: { contains: query.search, mode: 'insensitive' } },
+        { about: { contains: query.search, mode: 'insensitive' } },
+      ];
+    }
+
+    const page = query.page ? parseInt(query.page) : 1;
+    const limit = query.limit ? parseInt(query.limit) : 10;
+    const skip = (page - 1) * limit;
+
+    const [courses, total] = await this.prisma.$transaction([
+      this.prisma.course.findMany({
+        where,
+        include: {
+          category: true,
+          mentor: { select: { id: true, fullName: true, image: true } },
+          _count: { select: { ratings: true, sections: true } },
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.course.count({ where }),
+    ]);
+
     return { success: true, data: courses, total, page, limit };
   }
 

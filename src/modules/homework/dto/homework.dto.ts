@@ -1,6 +1,7 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsString, IsOptional, IsInt } from 'class-validator';
 import { Type } from 'class-transformer';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 export class CreateHomeworkDto {
   @ApiProperty({ example: "Uyga vazifa: ..." })
@@ -20,24 +21,12 @@ export class CreateHomeworkDto {
 
 export class UpdateHomeworkDto extends PartialType(CreateHomeworkDto) {}
 
-export class HomeworkQueryDto {
+export class HomeworkQueryDto extends PaginationDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   lessonId?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  page?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  limit?: number;
 }
 
 export class SubmitHomeworkDto {

@@ -7,6 +7,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { UserRole } from '@prisma/client';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Mentor Profiles')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -26,7 +27,7 @@ export class MentorProfileController {
   @ApiOperation({
     summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.STUDENT}`,
   })
-  findAll(@Query() query: any) {
+  findAll(@Query() query: PaginationDto) {
     return this.mentorProfileService.findAll(query);
   }
 

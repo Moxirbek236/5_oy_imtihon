@@ -29,6 +29,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { UserRole } from '@prisma/client';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -77,7 +78,7 @@ export class UsersController {
   @Get()
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
   @ApiOperation({ summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}` })
-  findAll(@Query() query: any) {
+  findAll(@Query() query: PaginationDto) {
     return this.usersService.findAll(query);
   }
 

@@ -30,8 +30,8 @@ export class QuestionService {
     if (query.courseId) where.courseId = parseInt(query.courseId);
     if (query.read !== undefined) where.read = query.read === 'true';
 
-    if (query.text) {
-      where.text = { contains: query.text, mode: 'insensitive' };
+    if (query.search) {
+      where.text = { contains: query.search, mode: 'insensitive' };
     }
 
     if (currentUser.role === 'STUDENT') {

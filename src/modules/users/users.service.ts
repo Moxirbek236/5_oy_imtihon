@@ -56,9 +56,13 @@ export class UsersService {
     const where: any = {};
 
     if (query.role) where.role = query.role;
-    if (query.fullName) where.fullName = { contains: query.fullName, mode: 'insensitive' };
-    if (query.email) where.email = { contains: query.email, mode: 'insensitive' };
-    if (query.phone) where.phone = { contains: query.phone };
+    if (query.search) {
+      where.OR = [
+        { fullName: { contains: query.search, mode: 'insensitive' } },
+        { email: { contains: query.search, mode: 'insensitive' } },
+        { phone: { contains: query.search } },
+      ];
+    }
 
     const page = query.page ? parseInt(query.page) : 1;
     const limit = query.limit ? parseInt(query.limit) : 10;

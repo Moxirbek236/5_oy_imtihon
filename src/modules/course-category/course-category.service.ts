@@ -13,8 +13,8 @@ export class CourseCategoryService {
 
   async findAll(query: any = {}) {
     const where: any = {};
-    if (query.name) {
-      where.name = { contains: query.name, mode: 'insensitive' };
+    if (query.search) {
+      where.name = { contains: query.search, mode: 'insensitive' };
     }
 
     const page = query.page ? parseInt(query.page) : 1;

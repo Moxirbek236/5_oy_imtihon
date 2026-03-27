@@ -49,6 +49,10 @@ export class RatingService {
     if (query.rate) where.rate = parseInt(query.rate);
     if (query.userId) where.userId = parseInt(query.userId);
 
+    if (query.search) {
+      where.comment = { contains: query.search, mode: 'insensitive' };
+    }
+
     const page = query.page ? parseInt(query.page) : 1;
     const limit = query.limit ? parseInt(query.limit) : 10;
     const skip = (page - 1) * limit;

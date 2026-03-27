@@ -39,8 +39,8 @@ export class ExamService {
       await assertStudentCanAccessCourse(this.prisma, user, section.courseId);
     }
 
-    if (query.question) {
-      where.question = { contains: query.question, mode: 'insensitive' };
+    if (query.search) {
+      where.question = { contains: query.search, mode: 'insensitive' };
     }
 
     if (user.role === 'MENTOR' && !query.sectionLessonId) {

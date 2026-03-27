@@ -57,6 +57,10 @@ export class HomeworkService {
       where.lesson = { section: { course: { mentorId: user.id } } };
     }
 
+    if (query.search) {
+      where.task = { contains: query.search, mode: 'insensitive' };
+    }
+
     const page = query.page ? parseInt(query.page) : 1;
     const limit = query.limit ? parseInt(query.limit) : 10;
     const skip = (page - 1) * limit;

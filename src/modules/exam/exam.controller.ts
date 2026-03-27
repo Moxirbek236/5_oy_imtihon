@@ -7,6 +7,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { UserRole } from '@prisma/client';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Exams')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -26,7 +27,7 @@ export class ExamController {
   @ApiOperation({
     summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.STUDENT}`,
   })
-  findAll(@Query() query: any, @CurrentUser() user: any) {
+  findAll(@Query() query: PaginationDto, @CurrentUser() user: any) {
     return this.examService.findAll(query, user);
   }
 

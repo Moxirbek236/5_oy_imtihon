@@ -29,8 +29,12 @@ export class MentorProfileService {
       where.job = { contains: query.job, mode: 'insensitive' };
     }
 
-    if (query.fullName) {
-      where.user = { fullName: { contains: query.fullName, mode: 'insensitive' } };
+    if (query.search) {
+      where.OR = [
+        { job: { contains: query.search, mode: 'insensitive' } },
+        { about: { contains: query.search, mode: 'insensitive' } },
+        { user: { fullName: { contains: query.search, mode: 'insensitive' } } },
+      ];
     }
 
     const page = query.page ? parseInt(query.page) : 1;

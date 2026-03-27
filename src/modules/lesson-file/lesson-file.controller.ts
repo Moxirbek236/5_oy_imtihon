@@ -23,6 +23,7 @@ import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { UserRole } from '@prisma/client';
 import { LessonFileService } from './lesson-file.service';
 import { CreateLessonFileDto } from './dto/lesson-file.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Lesson files')
 @Controller('lesson-files')
@@ -76,8 +77,8 @@ export class LessonFileController {
   @ApiOperation({
     summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.STUDENT}`,
   })
-  list(@Query('lessonId', ParseIntPipe) lessonId: number) {
-    return this.lessonFileService.findByLesson(lessonId);
+  list(@Query() query: PaginationDto, @Query('lessonId') lessonId?: number) {
+    return this.lessonFileService.findByLesson(lessonId ? Number(lessonId) : undefined, query);
   }
 
   @Delete(':id')

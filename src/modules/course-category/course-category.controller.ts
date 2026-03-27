@@ -6,6 +6,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Course Categories')
 @Controller('course-categories')
@@ -25,7 +26,7 @@ export class CourseCategoryController {
   @ApiOperation({
     summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.STUDENT}`,
   })
-  findAll(@Query() query: any) {
+  findAll(@Query() query: PaginationDto) {
     return this.courseCategoryService.findAll(query);
   }
 
