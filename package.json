@@ -21,7 +21,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "start:render": "npx prisma migrate deploy && npm run start:prod"
+    "start:render": "npx prisma db push && npm run start:prod"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
