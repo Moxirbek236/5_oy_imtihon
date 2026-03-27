@@ -27,13 +27,15 @@ export class AuthService {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     await this.redisService.saveOTP(email, otp);
-    const sent = await this.mailService.sendOTP(email, otp);
+    // Email yuborishni kutmasdan (await-siz) orqa fonda ishga tushiramiz
+    this.mailService.sendOTP(email, otp).catch(err => {
+      // Faqat logga yozamiz, foydalanuvchiga xalaqit bermaydi
+      console.error(`Background email error for ${email}:`, err);
+    });
 
     return {
       success: true,
-      message: sent
-        ? 'OTP xabar pochtangizga yuborildi'
-        : 'Elektron pochtaga yuborishda xatolik yuz berdi, lekin tizim kodni qabul qildi',
+      message: 'OTP kod tayyorlandi va emailga yuborilmoqda',
       otp,
     };
   }
@@ -112,13 +114,15 @@ export class AuthService {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     await this.redisService.saveOTP(email, otp);
-    const sent = await this.mailService.sendOTP(email, otp);
+    
+    // Email yuborishni kutmasdan (await-siz) orqa fonda ishga tushiramiz
+    this.mailService.sendOTP(email, otp).catch(err => {
+      console.error(`Background forgot-password email error for ${email}:`, err);
+    });
 
     return {
       success: true,
-      message: sent
-        ? 'OTP xabar pochtangizga yuborildi'
-        : 'Elektron pochtaga yuborishda xatolik yuz berdi, lekin tizim kodni qabul qildi',
+      message: 'OTP kod tayyorlandi va emailga yuborilmoqda',
       otp,
     };
   }
