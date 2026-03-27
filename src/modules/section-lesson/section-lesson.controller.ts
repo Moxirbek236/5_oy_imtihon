@@ -24,10 +24,10 @@ export class SectionLessonController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT)
+  @Roles(UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT, UserRole.STUDENT)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.ASSISTANT}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.STUDENT}`,
   })
   findAll(@Query() query: any, @CurrentUser() user: any) {
     return this.sectionLessonService.findAll(query, user);
@@ -35,10 +35,10 @@ export class SectionLessonController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT)
+  @Roles(UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT, UserRole.STUDENT)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.ASSISTANT}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.STUDENT}`,
   })
   findOne(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: any) {
     return this.sectionLessonService.findOne(id, user);

@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateSectionLessonDto, UpdateSectionLessonDto } from './dto/section-lesson.dto';
-import { assertMentorOrAdminOwnsCourse } from 'src/common/assert-course-access';
+import { assertMentorOrAdminOwnsCourse, assertStudentCanAccessCourse } from 'src/common/assert-course-access';
 import { LastActivityService } from '../last-activity/last-activity.service';
 import { UserRole } from '@prisma/client';
 
@@ -27,14 +27,26 @@ export class SectionLessonService {
     const where: any = {};
 
     if (query.courseId) {
-      where.courseId = parseInt(query.courseId);
+      const cid = parseInt(query.courseId);
+      await assertStudentCanAccessCourse(this.prisma, user, cid);
+      where.courseId = cid;
+    } else if (user.role === UserRole.STUDENT) {
+      // Agar student courseId bermasa, u barcha bo'limlarni ko'ra olmaydi
+      // Faqat o'zi sotib olgan kurs bo'limlarini filter qilish mumkin, 
+      // lekin odatda bitta kurs bo'yicha so'raladi.
+      where.course = {
+        OR: [
+          { purchasedCourses: { some: { userId: user.id } } },
+          { assignedCourses: { some: { userId: user.id } } },
+        ],
+      };
     }
 
     if (query.name) {
       where.name = { contains: query.name, mode: 'insensitive' };
     }
 
-    if (user.role === 'MENTOR' && !query.courseId) {
+    if (user.role === UserRole.MENTOR && !query.courseId) {
       where.course = { mentorId: user.id };
     }
 
@@ -71,7 +83,7 @@ export class SectionLessonService {
     });
     if (!section) throw new NotFoundException('Bolim topilmadi');
 
-    await assertMentorOrAdminOwnsCourse(this.prisma, user, section.courseId);
+    await assertStudentCanAccessCourse(this.prisma, user, section.courseId);
 
     if (user && user.role === UserRole.STUDENT) {
       await this.lastActivityService.upsert(user.id, { sectionId: id });
