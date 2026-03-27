@@ -29,9 +29,13 @@ export class AuthService {
     await this.redisService.saveOTP(email, otp);
     const sent = await this.mailService.sendOTP(email, otp);
 
-    if (!sent) throw new BadRequestException('Elektron pochtaga yuborishda xatolik yuz berdi');
-
-    return { success: true, message: 'OTP xabar pochtangizga yuborildi', otp };
+    return {
+      success: true,
+      message: sent
+        ? 'OTP xabar pochtangizga yuborildi'
+        : 'Elektron pochtaga yuborishda xatolik yuz berdi, lekin tizim kodni qabul qildi',
+      otp,
+    };
   }
 
   async register(email: string, fullName: string, password: string, otp: string) {
@@ -108,9 +112,15 @@ export class AuthService {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     await this.redisService.saveOTP(email, otp);
-    await this.mailService.sendOTP(email, otp);
+    const sent = await this.mailService.sendOTP(email, otp);
 
-    return { success: true, message: 'OTP xabar pochtangizga yuborildi', otp };
+    return {
+      success: true,
+      message: sent
+        ? 'OTP xabar pochtangizga yuborildi'
+        : 'Elektron pochtaga yuborishda xatolik yuz berdi, lekin tizim kodni qabul qildi',
+      otp,
+    };
   }
 
   async resetPassword(email: string, otp: string, newPassword: string) {
